@@ -36,6 +36,8 @@ SAIL_DEFAULT_INST += riscv_insts_zks.sail
 SAIL_DEFAULT_INST += riscv_insts_zbkb.sail
 SAIL_DEFAULT_INST += riscv_insts_zbkx.sail
 
+SAIL_DEFAULT_INST += riscv_insts_zce_ext.sail
+
 SAIL_SEQ_INST  = $(SAIL_DEFAULT_INST) riscv_jalr_seq.sail
 SAIL_RMEM_INST = $(SAIL_DEFAULT_INST) riscv_jalr_rmem.sail riscv_insts_rmem.sail
 
@@ -187,6 +189,9 @@ all: ocaml_emulator/riscv_ocaml_sim_$(ARCH) c_emulator/riscv_sim_$(ARCH) riscv_i
 
 check: $(SAIL_SRCS) model/main.sail Makefile
 	$(SAIL) $(SAIL_FLAGS) $(SAIL_SRCS) model/main.sail
+
+doc: $(SAIL_SRCS) Makefile
+	$(SAIL) -doc $(SAIL_DOC_FLAGS) $(SAIL_SRCS)
 
 interpret: $(SAIL_SRCS) model/main.sail
 	$(SAIL) -i $(SAIL_FLAGS) $(SAIL_SRCS) model/main.sail

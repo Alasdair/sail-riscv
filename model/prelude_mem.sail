@@ -35,18 +35,18 @@ enum read_kind = {
   Read_RISCV_reserved_strong_acquire,
 }
 
-enum barrier_kind = {
-  Barrier_RISCV_rw_rw,
-  Barrier_RISCV_r_rw,
-  Barrier_RISCV_r_r,
-  Barrier_RISCV_rw_w,
-  Barrier_RISCV_w_w,
-  Barrier_RISCV_w_rw,
-  Barrier_RISCV_rw_r,
-  Barrier_RISCV_r_w,
-  Barrier_RISCV_w_r,
-  Barrier_RISCV_tso,
-  Barrier_RISCV_i,
+enum fence_kind = {
+  MEMORY_FENCE_RW_RW,
+  MEMORY_FENCE_R_RW,
+  MEMORY_FENCE_R_R,
+  MEMORY_FENCE_RW_W,
+  MEMORY_FENCE_W_W,
+  MEMORY_FENCE_W_RW,
+  MEMORY_FENCE_RW_R,
+  MEMORY_FENCE_R_W,
+  MEMORY_FENCE_W_R,
+  MEMORY_FENCE_TSO,
+  MEMORY_FENCE_I,
 }
 
 /* Most of the above read/write_kinds are understood natively by the
@@ -149,7 +149,14 @@ function read_ram(rk, addr, width, read_meta) = {
   }
 }
 
-instantiation sail_barrier with 'barrier = barrier_kind
+instantiation sail_barrier with 'barrier = fence_kind
+
+function riscv_fence(kind : fence_kind, pred_io : bits(2), succ_io : bits(2)) -> unit = {
+  // Currently the memory subsystem doesn't know anything about IO fences
+  sail_barrier(kind)
+}
+
+function riscv_io_only_fence(pred_io : bits(2), succ_io : bits(2)) -> unit = ()
 
 val __TraceMemoryWrite : forall 'n 'm. (int('n), bits('m), bits(8 * 'n)) -> unit
 val __TraceMemoryRead  : forall 'n 'm. (int('n), bits('m), bits(8 * 'n)) -> unit

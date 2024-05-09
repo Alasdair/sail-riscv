@@ -550,22 +550,19 @@ function clause execute (FENCE(pred, succ)) = {
   let pred = effective_fence_set(pred, fiom);
   let succ = effective_fence_set(succ, fiom);
 
-  match (pred, succ) {
-    (_ : bits(2) @ 0b11, _ : bits(2) @ 0b11) => sail_barrier(Barrier_RISCV_rw_rw),
-    (_ : bits(2) @ 0b10, _ : bits(2) @ 0b11) => sail_barrier(Barrier_RISCV_r_rw),
-    (_ : bits(2) @ 0b10, _ : bits(2) @ 0b10) => sail_barrier(Barrier_RISCV_r_r),
-    (_ : bits(2) @ 0b11, _ : bits(2) @ 0b01) => sail_barrier(Barrier_RISCV_rw_w),
-    (_ : bits(2) @ 0b01, _ : bits(2) @ 0b01) => sail_barrier(Barrier_RISCV_w_w),
-    (_ : bits(2) @ 0b01, _ : bits(2) @ 0b11) => sail_barrier(Barrier_RISCV_w_rw),
-    (_ : bits(2) @ 0b11, _ : bits(2) @ 0b10) => sail_barrier(Barrier_RISCV_rw_r),
-    (_ : bits(2) @ 0b10, _ : bits(2) @ 0b01) => sail_barrier(Barrier_RISCV_r_w),
-    (_ : bits(2) @ 0b01, _ : bits(2) @ 0b10) => sail_barrier(Barrier_RISCV_w_r),
+  match (pred[1..0], succ[1..0]) {
+    (0b11, 0b11) => riscv_fence(MEMORY_FENCE_RW_RW, pred[3..2], succ[3..2]),
+    (0b10, 0b11) => riscv_fence(MEMORY_FENCE_R_RW, pred[3..2], succ[3..2]),
+    (0b10, 0b10) => riscv_fence(MEMORY_FENCE_R_R, pred[3..2], succ[3..2]),
+    (0b11, 0b01) => riscv_fence(MEMORY_FENCE_RW_W, pred[3..2], succ[3..2]),
+    (0b01, 0b01) => riscv_fence(MEMORY_FENCE_W_W, pred[3..2], succ[3..2]),
+    (0b01, 0b11) => riscv_fence(MEMORY_FENCE_W_RW, pred[3..2], succ[3..2]),
+    (0b11, 0b10) => riscv_fence(MEMORY_FENCE_RW_R, pred[3..2], succ[3..2]),
+    (0b10, 0b01) => riscv_fence(MEMORY_FENCE_R_W, pred[3..2], succ[3..2]),
+    (0b01, 0b10) => riscv_fence(MEMORY_FENCE_W_R, pred[3..2], succ[3..2]),
 
-    (_ : bits(4)       , _ : bits(2) @ 0b00) => (),
-    (_ : bits(2) @ 0b00, _ : bits(4)       ) => (),
-
-    _ => { print("FIXME: unsupported fence");
-           () }
+    (_, 0b00) => riscv_io_only_fence(pred[3..2], succ[3..2]),
+    (0b00, _) => riscv_io_only_fence(pred[3..2], succ[3..2]),
   };
   RETIRE_SUCCESS
 }
@@ -604,12 +601,10 @@ mapping clause encdec = FENCE_TSO(pred, succ)
   <-> 0b1000 @ pred @ succ @ 0b00000 @ 0b000 @ 0b00000 @ 0b0001111
 
 function clause execute (FENCE_TSO(pred, succ)) = {
+  /* All combinations except RW.RW are reserved for FENCE.TSO */
   match (pred, succ) {
-    (_ : bits(2) @ 0b11, _ : bits(2) @ 0b11) => sail_barrier(Barrier_RISCV_tso),
-    (_ : bits(2) @ 0b00, _ : bits(2) @ 0b00) => (),
-
-    _ => { print("FIXME: unsupported fence");
-           () }
+    (0b0011, 0b0011) => riscv_fence(MEMORY_FENCE_TSO, 0b00, 0b00),
+    _ => throw(Error_reserved_for_future_use())
   };
   RETIRE_SUCCESS
 }

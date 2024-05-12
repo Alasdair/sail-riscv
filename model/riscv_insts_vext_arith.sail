@@ -43,6 +43,7 @@ mapping encdec_vvfunct6 : vvfunct6 <-> bits(6) = {
 mapping clause encdec = VVTYPE(funct6, vm, vs2, vs1, vd) if haveVExt()
   <-> encdec_vvfunct6(funct6) @ vm @ vs2 @ vs1 @ 0b000 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(VVTYPE(funct6, vm, vs2, vs1, vd)) = {
   let SEW_pow  = get_sew_pow();
   let SEW      = get_sew();
@@ -177,6 +178,7 @@ mapping encdec_nvsfunct6 : nvsfunct6 <-> bits(6) = {
 mapping clause encdec = NVSTYPE(funct6, vm, vs2, vs1, vd) if haveVExt()
   <-> encdec_nvsfunct6(funct6) @ vm @ vs2 @ vs1 @ 0b000 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(NVSTYPE(funct6, vm, vs2, vs1, vd)) = {
   let SEW      = get_sew();
   let LMUL_pow = get_lmul_pow();
@@ -244,6 +246,7 @@ mapping encdec_nvfunct6 : nvfunct6 <-> bits(6) = {
 mapping clause encdec = NVTYPE(funct6, vm, vs2, vs1, vd) if haveVExt()
   <-> encdec_nvfunct6(funct6) @ vm @ vs2 @ vs1 @ 0b000 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(NVTYPE(funct6, vm, vs2, vs1, vd)) = {
   let SEW      = get_sew();
   let LMUL_pow = get_lmul_pow();
@@ -413,6 +416,7 @@ mapping encdec_vxfunct6 : vxfunct6 <-> bits(6) = {
 mapping clause encdec = VXTYPE(funct6, vm, vs2, rs1, vd) if haveVExt()
   <-> encdec_vxfunct6(funct6) @ vm @ vs2 @ rs1 @ 0b100 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(VXTYPE(funct6, vm, vs2, rs1, vd)) = {
   let SEW      = get_sew();
   let LMUL_pow = get_lmul_pow();
@@ -529,6 +533,7 @@ mapping encdec_nxsfunct6 : nxsfunct6 <-> bits(6) = {
 mapping clause encdec = NXSTYPE(funct6, vm, vs2, rs1, vd) if haveVExt()
   <-> encdec_nxsfunct6(funct6) @ vm @ vs2 @ rs1 @ 0b100 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(NXSTYPE(funct6, vm, vs2, rs1, vd)) = {
   let SEW      = get_sew();
   let LMUL_pow = get_lmul_pow();
@@ -596,6 +601,7 @@ mapping encdec_nxfunct6 : nxfunct6 <-> bits(6) = {
 mapping clause encdec = NXTYPE(funct6, vm, vs2, rs1, vd) if haveVExt()
   <-> encdec_nxfunct6(funct6) @ vm @ vs2 @ rs1 @ 0b100 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(NXTYPE(funct6, vm, vs2, rs1, vd)) = {
   let SEW      = get_sew();
   let LMUL_pow = get_lmul_pow();
@@ -665,6 +671,7 @@ mapping encdec_vxsgfunct6 : vxsgfunct6 <-> bits(6) = {
 mapping clause encdec = VXSG(funct6, vm, vs2, rs1, vd) if haveVExt()
   <-> encdec_vxsgfunct6(funct6) @ vm @ vs2 @ rs1 @ 0b100 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(VXSG(funct6, vm, vs2, rs1, vd)) = {
   let SEW_pow  = get_sew_pow();
   let SEW      = get_sew();
@@ -719,6 +726,7 @@ mapping vxsg_mnemonic : vxsgfunct6 <-> string = {
   VX_VRGATHER     <-> "vrgather.vx"
 }
 
+$[split funct6]
 mapping clause assembly = VXSG(funct6, vm, vs2, rs1, vd)
   <-> vxsg_mnemonic(funct6) ^ spc() ^ vreg_name(vd) ^ sep() ^ vreg_name(vs2) ^ sep() ^ reg_name(rs1) ^ maybe_vmask(vm)
 
@@ -827,6 +835,7 @@ mapping encdec_vifunct6 : vifunct6 <-> bits(6) = {
 mapping clause encdec = VITYPE(funct6, vm, vs2, simm, vd) if haveVExt()
   <-> encdec_vifunct6(funct6) @ vm @ vs2 @ simm @ 0b011 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(VITYPE(funct6, vm, vs2, simm, vd)) = {
   let SEW      = get_sew();
   let LMUL_pow = get_lmul_pow();
@@ -919,6 +928,7 @@ mapping encdec_nisfunct6 : nisfunct6 <-> bits(6) = {
 mapping clause encdec = NISTYPE(funct6, vm, vs2, simm, vd) if haveVExt()
   <-> encdec_nisfunct6(funct6) @ vm @ vs2 @ simm @ 0b011 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(NISTYPE(funct6, vm, vs2, simm, vd)) = {
   let SEW      = get_sew();
   let LMUL_pow = get_lmul_pow();
@@ -986,6 +996,7 @@ mapping encdec_nifunct6 : nifunct6 <-> bits(6) = {
 mapping clause encdec = NITYPE(funct6, vm, vs2, simm, vd) if haveVExt()
   <-> encdec_nifunct6(funct6) @ vm @ vs2 @ simm @ 0b011 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(NITYPE(funct6, vm, vs2, simm, vd)) = {
   let SEW      = get_sew();
   let LMUL_pow = get_lmul_pow();
@@ -1055,6 +1066,7 @@ mapping encdec_visgfunct6 : visgfunct6 <-> bits(6) = {
 mapping clause encdec = VISG(funct6, vm, vs2, simm, vd) if haveVExt()
   <-> encdec_visgfunct6(funct6) @ vm @ vs2 @ simm @ 0b011 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(VISG(funct6, vm, vs2, simm, vd)) = {
   let SEW_pow  = get_sew_pow();
   let SEW      = get_sew();
@@ -1260,6 +1272,7 @@ mapping encdec_mvvfunct6 : mvvfunct6 <-> bits(6) = {
 mapping clause encdec = MVVTYPE(funct6, vm, vs2, vs1, vd) if haveVExt()
   <-> encdec_mvvfunct6(funct6) @ vm @ vs2 @ vs1 @ 0b010 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(MVVTYPE(funct6, vm, vs2, vs1, vd)) = {
   let SEW      = get_sew();
   let LMUL_pow = get_lmul_pow();
@@ -1369,6 +1382,7 @@ mapping encdec_mvvmafunct6 : mvvmafunct6 <-> bits(6) = {
 mapping clause encdec = MVVMATYPE(funct6, vm, vs2, vs1, vd) if haveVExt()
   <-> encdec_mvvmafunct6(funct6) @ vm @ vs2 @ vs1 @ 0b010 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(MVVMATYPE(funct6, vm, vs2, vs1, vd)) = {
   let SEW      = get_sew();
   let LMUL_pow = get_lmul_pow();
@@ -1429,6 +1443,7 @@ mapping encdec_wvvfunct6 : wvvfunct6 <-> bits(6) = {
 mapping clause encdec = WVVTYPE(funct6, vm, vs2, vs1, vd) if haveVExt()
   <-> encdec_wvvfunct6(funct6) @ vm @ vs2 @ vs1 @ 0b010 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(WVVTYPE(funct6, vm, vs2, vs1, vd)) = {
   let SEW      = get_sew();
   let LMUL_pow = get_lmul_pow();
@@ -1499,6 +1514,7 @@ mapping encdec_wvfunct6 : wvfunct6 <-> bits(6) = {
 mapping clause encdec = WVTYPE(funct6, vm, vs2, vs1, vd) if haveVExt()
   <-> encdec_wvfunct6(funct6) @ vm @ vs2 @ vs1 @ 0b010 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(WVTYPE(funct6, vm, vs2, vs1, vd)) = {
   let SEW      = get_sew();
   let LMUL_pow = get_lmul_pow();
@@ -1562,6 +1578,7 @@ mapping encdec_wmvvfunct6 : wmvvfunct6 <-> bits(6) = {
 mapping clause encdec =  WMVVTYPE(funct6, vm, vs2, vs1, vd) if haveVExt()
   <-> encdec_wmvvfunct6(funct6) @ vm @ vs2 @ vs1 @ 0b010 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(WMVVTYPE(funct6, vm, vs2, vs1, vd)) = {
   let SEW      = get_sew();
   let LMUL_pow = get_lmul_pow();
@@ -1623,6 +1640,7 @@ mapping vext2_vs1 : vext2funct6 <-> bits(5) = {
 mapping clause encdec = VEXT2TYPE(funct6, vm, vs2, vd) if haveVExt()
   <-> 0b010010 @ vm @ vs2 @ vext2_vs1(funct6) @ 0b010 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(VEXT2TYPE(funct6, vm, vs2, vd)) = {
   let SEW = get_sew();
   let LMUL_pow = get_lmul_pow();
@@ -1681,6 +1699,7 @@ mapping vext4_vs1 : vext4funct6 <-> bits(5) = {
 mapping clause encdec = VEXT4TYPE(funct6, vm, vs2, vd) if haveVExt()
   <-> 0b010010 @ vm @ vs2 @ vext4_vs1(funct6) @ 0b010 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(VEXT4TYPE(funct6, vm, vs2, vd)) = {
   let SEW = get_sew();
   let LMUL_pow = get_lmul_pow();
@@ -1739,6 +1758,7 @@ mapping vext8_vs1 : vext8funct6 <-> bits(5) = {
 mapping clause encdec = VEXT8TYPE(funct6, vm, vs2, vd) if haveVExt()
   <-> 0b010010 @ vm @ vs2 @ vext8_vs1(funct6) @ 0b010 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(VEXT8TYPE(funct6, vm, vs2, vd)) = {
   let SEW = get_sew();
   let LMUL_pow = get_lmul_pow();
@@ -1893,6 +1913,7 @@ mapping encdec_mvxfunct6 : mvxfunct6 <-> bits(6) = {
 mapping clause encdec = MVXTYPE(funct6, vm, vs2, rs1, vd) if haveVExt()
   <-> encdec_mvxfunct6(funct6) @ vm @ vs2 @ rs1 @ 0b110 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(MVXTYPE(funct6, vm, vs2, rs1, vd)) = {
   let SEW      = get_sew();
   let LMUL_pow = get_lmul_pow();
@@ -2013,6 +2034,7 @@ mapping encdec_mvxmafunct6 : mvxmafunct6 <-> bits(6) = {
 mapping clause encdec = MVXMATYPE(funct6, vm, vs2, rs1, vd) if haveVExt()
   <-> encdec_mvxmafunct6(funct6) @ vm @ vs2 @ rs1 @ 0b110 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(MVXMATYPE(funct6, vm, vs2, rs1, vd)) = {
   let SEW      = get_sew();
   let LMUL_pow = get_lmul_pow();
@@ -2074,6 +2096,7 @@ mapping encdec_wvxfunct6 : wvxfunct6 <-> bits(6) = {
 mapping clause encdec = WVXTYPE(funct6, vm, vs2, rs1, vd) if haveVExt()
   <-> encdec_wvxfunct6(funct6) @ vm @ vs2 @ rs1 @ 0b110 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(WVXTYPE(funct6, vm, vs2, rs1, vd)) = {
   let SEW      = get_sew();
   let LMUL_pow = get_lmul_pow();
@@ -2143,6 +2166,7 @@ mapping encdec_wxfunct6 : wxfunct6 <-> bits(6) = {
 mapping clause encdec = WXTYPE(funct6, vm, vs2, rs1, vd) if haveVExt()
   <-> encdec_wxfunct6(funct6) @ vm @ vs2 @ rs1 @ 0b110 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(WXTYPE(funct6, vm, vs2, rs1, vd)) = {
   let SEW      = get_sew();
   let LMUL_pow = get_lmul_pow();
@@ -2206,6 +2230,7 @@ mapping encdec_wmvxfunct6 : wmvxfunct6 <-> bits(6) = {
 mapping clause encdec = WMVXTYPE(funct6, vm, vs2, rs1, vd) if haveVExt()
   <-> encdec_wmvxfunct6(funct6) @ vm @ vs2 @ rs1 @ 0b110 @ vd @ 0b1010111 if haveVExt()
 
+$[split funct6]
 function clause execute(WMVXTYPE(funct6, vm, vs2, rs1, vd)) = {
   let SEW      = get_sew();
   let LMUL_pow = get_lmul_pow();

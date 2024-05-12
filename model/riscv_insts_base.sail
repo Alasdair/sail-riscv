@@ -21,6 +21,7 @@ mapping encdec_uop : uop <-> bits(7) = {
 mapping clause encdec = UTYPE(imm, rd, op)
   <-> imm @ rd @ encdec_uop(op)
 
+$[split op]
 function clause execute UTYPE(imm, rd, op) = {
   let off : xlenbits = sign_extend(imm @ 0x000);
   let ret : xlenbits = match op {
@@ -42,20 +43,8 @@ mapping clause assembly = UTYPE(imm, rd, op)
 /* ****************************************************************** */
 union clause ast = RISCV_JAL : (bits(21), regidx)
 
-mapping clause encdec = RISCV_JAL(imm_19 @ imm_7_0 @ imm_8 @ imm_18_13 @ imm_12_9 @ 0b0, rd)
-  <-> imm_19 : bits(1) @ imm_18_13 : bits(6) @ imm_12_9 : bits(4) @ imm_8 : bits(1) @ imm_7_0 : bits(8) @ rd @ 0b1101111
-
-/*
-ideally we want some syntax like
-
-mapping clause encdec = RISCV_JAL(imm @ 0b0, rd) <-> imm[19] @ imm[9..0] @ imm[10] @ imm[18..11] @ rd @ 0b1101111
-
-match bv {
-  imm[19] @ imm[9..0] @ imm[10] @ imm[18..11] -> imm @ 0b0
-}
-
-but this is difficult
-*/
+mapping clause encdec = RISCV_JAL(imm20[19] @ imm20[7..0] @ imm20[8] @ imm20[18..13] @ imm20[12..9] @ 0b0, rd)
+  <-> imm20 : bits(20) @ rd @ 0b1101111
 
 function clause execute (RISCV_JAL(imm, rd)) = {
   let t : xlenbits = PC + sign_extend(imm);
@@ -108,9 +97,10 @@ mapping encdec_bop : bop <-> bits(3) = {
   RISCV_BGEU <-> 0b111
 }
 
-mapping clause encdec = BTYPE(imm7_6 @ imm5_0 @ imm7_5_0 @ imm5_4_1 @ 0b0, rs2, rs1, op)
-  <-> imm7_6 : bits(1) @ imm7_5_0 : bits(6) @ rs2 @ rs1 @ encdec_bop(op) @ imm5_4_1 : bits(4) @ imm5_0 : bits(1) @ 0b1100011
+mapping clause encdec = BTYPE(imm7[6] @ imm5[0] @ imm7[5 .. 0] @ imm5[4 .. 1] @ 0b0, rs2, rs1, op)
+  <-> imm7 : bits(7) @ rs2 @ rs1 @ encdec_bop(op) @ imm5 : bits(5) @ 0b1100011
 
+$[split op]
 function clause execute (BTYPE(imm, rs2, rs1, op)) = {
   let rs1_val = X(rs1);
   let rs2_val = X(rs2);
@@ -170,6 +160,7 @@ mapping encdec_iop : iop <-> bits(3) = {
 mapping clause encdec = ITYPE(imm, rs1, rd, op)
   <-> imm @ rs1 @ encdec_iop(op) @ rd @ 0b0010011
 
+$[split op]
 function clause execute (ITYPE (imm, rs1, rd, op)) = {
   let rs1_val = X(rs1);
   let immext : xlenbits = sign_extend(imm);
@@ -210,6 +201,7 @@ mapping clause encdec = SHIFTIOP(shamt, rs1, rd, RISCV_SLLI) <-> 0b000000 @ sham
 mapping clause encdec = SHIFTIOP(shamt, rs1, rd, RISCV_SRLI) <-> 0b000000 @ shamt @ rs1 @ 0b101 @ rd @ 0b0010011 if sizeof(xlen) == 64 | shamt[5] == bitzero
 mapping clause encdec = SHIFTIOP(shamt, rs1, rd, RISCV_SRAI) <-> 0b010000 @ shamt @ rs1 @ 0b101 @ rd @ 0b0010011 if sizeof(xlen) == 64 | shamt[5] == bitzero
 
+$[split op]
 function clause execute (SHIFTIOP(shamt, rs1, rd, op)) = {
   let rs1_val = X(rs1);
   /* the decoder guard should ensure that shamt[5] = 0 for RV32 */
@@ -251,6 +243,7 @@ mapping clause encdec = RTYPE(rs2, rs1, rd, RISCV_SRL)  <-> 0b0000000 @ rs2 @ rs
 mapping clause encdec = RTYPE(rs2, rs1, rd, RISCV_SUB)  <-> 0b0100000 @ rs2 @ rs1 @ 0b000 @ rd @ 0b0110011
 mapping clause encdec = RTYPE(rs2, rs1, rd, RISCV_SRA)  <-> 0b0100000 @ rs2 @ rs1 @ 0b101 @ rd @ 0b0110011
 
+$[split op]
 function clause execute (RTYPE(rs2, rs1, rd, op)) = {
   let rs1_val = X(rs1);
   let rs2_val = X(rs2);
@@ -466,6 +459,7 @@ mapping clause encdec = RTYPEW(rs2, rs1, rd, RISCV_SRAW)
   <-> 0b0100000 @ rs2 @ rs1 @ 0b101 @ rd @ 0b0111011
       if sizeof(xlen) == 64
 
+$[split op]
 function clause execute (RTYPEW(rs2, rs1, rd, op)) = {
   let rs1_val = (X(rs1))[31..0];
   let rs2_val = (X(rs2))[31..0];
@@ -509,6 +503,7 @@ mapping clause encdec = SHIFTIWOP(shamt, rs1, rd, RISCV_SRAIW)
   <-> 0b0100000 @ shamt @ rs1 @ 0b101 @ rd @ 0b0011011
       if sizeof(xlen) == 64
 
+$[split op]
 function clause execute (SHIFTIWOP(shamt, rs1, rd, op)) = {
   let rs1_val = (X(rs1))[31..0];
   let result : bits(32) = match op {

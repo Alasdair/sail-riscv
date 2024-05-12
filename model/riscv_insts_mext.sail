@@ -11,10 +11,14 @@
 
 /* ****************************************************************** */
 
+$ifndef ALTERNATIVE_MUL
+
+$span start MUL1
+
 union clause ast = MUL : (regidx, regidx, regidx, mul_op)
 
 mapping encdec_mul_op : mul_op <-> bits(3) = {
-  struct { high = false, signed1 = true,  signed2 = false } <-> 0b000,
+  struct { high = false, signed1 = true,  signed2 = true  } <-> 0b000,
   struct { high = true,  signed1 = true,  signed2 = true  } <-> 0b001,
   struct { high = true,  signed1 = true,  signed2 = false } <-> 0b010,
   struct { high = true,  signed1 = false, signed2 = false } <-> 0b011
@@ -42,7 +46,7 @@ function clause execute (MUL(rs2, rs1, rd, mul_op)) = {
 }
 
 mapping mul_mnemonic : mul_op <-> string = {
-  struct { high = false, signed1 = true,  signed2 = false } <-> "mul",
+  struct { high = false, signed1 = true,  signed2 = true  } <-> "mul",
   struct { high = true,  signed1 = true,  signed2 = true  } <-> "mulh",
   struct { high = true,  signed1 = true,  signed2 = false } <-> "mulhsu",
   struct { high = true,  signed1 = false, signed2 = false } <-> "mulhu"
@@ -50,6 +54,16 @@ mapping mul_mnemonic : mul_op <-> string = {
 
 mapping clause assembly = MUL(rs2, rs1, rd, mul_op)
   <-> mul_mnemonic(mul_op) ^ spc() ^ reg_name(rd) ^ sep() ^ reg_name(rs1) ^ sep() ^ reg_name(rs2)
+
+$span end
+
+$else
+
+$span start MUL2
+
+$span end
+
+$endif
 
 /* ****************************************************************** */
 union clause ast = DIV : (regidx, regidx, regidx, bool)

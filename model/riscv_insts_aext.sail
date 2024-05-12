@@ -211,6 +211,7 @@ mapping clause encdec = AMO(op, aq, rl, rs2, rs1, size, rd) if amo_width_valid(s
 
 /* NOTE: Currently, we only EA if address translation is successful.
    This may need revisiting. */
+$[split op]
 function clause execute (AMO(op, aq, rl, rs2, rs1, width, rd)) = {
   if haveAtomics() then {
     /* Get the address, X(rs1) (no offset).

@@ -21,9 +21,13 @@ val assembly : ast <-> string
 scattered mapping assembly
 
 val encdec : ast <-> bits(32)
+
+$[optimize_control_flow_order]
 scattered mapping encdec
 
 val encdec_compressed : ast <-> bits(16)
+
+$[optimize_control_flow_order]
 scattered mapping encdec_compressed
 
 /*

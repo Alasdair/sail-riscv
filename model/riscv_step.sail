@@ -9,6 +9,7 @@
 /* The emulator fetch-execute-interrupt dispatch loop. */
 
 /* returns whether to increment the step count in the trace */
+$[sv_toplevel { clk = true, types = ["int #0"] }]
 function step(step_no : int) -> bool = {
   /* for step extensions */
   ext_pre_step_hook();
@@ -36,16 +37,19 @@ function step(step_no : int) -> bool = {
         match ext_fetch_hook(fetch()) {
           /* extension error */
           F_Ext_Error(e)   => {
+            print_endline("EXT ERR");
             ext_handle_fetch_check_error(e);
             (RETIRE_FAIL, false)
           },
           /* standard error */
           F_Error(e, addr) => {
+            print_endline("ERR");
             handle_mem_exception(addr, e);
             (RETIRE_FAIL, false)
           },
           /* non-error cases: */
           F_RVC(h) => {
+            print_bits("h = ", h);
             sail_instr_announce(h);
             instbits = zero_extend(h);
             let ast = ext_decode_compressed(h);
@@ -63,13 +67,10 @@ function step(step_no : int) -> bool = {
             }
           },
           F_Base(w) => {
+            print_bits("w = ", w);
             sail_instr_announce(w);
             instbits = zero_extend(w);
             let ast = ext_decode(w);
-            if   get_config_print_instr()
-            then {
-              print_instr("[" ^ dec_str(step_no) ^ "] [" ^ to_str(cur_privilege) ^ "]: " ^ BitStr(PC) ^ " (" ^ BitStr(w) ^ ") " ^ to_str(ast));
-            };
             nextPC = PC + 4;
             (execute(ast), true)
           }
@@ -82,7 +83,7 @@ function step(step_no : int) -> bool = {
   /* update minstret */
   match retired {
     RETIRE_SUCCESS => retire_instruction(),
-    RETIRE_FAIL    => ()
+    RETIRE_FAIL    => print_endline("FAIL"),
   };
 
   /* for step extensions */

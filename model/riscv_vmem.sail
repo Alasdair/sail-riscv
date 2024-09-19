@@ -205,6 +205,8 @@ function legalize_satp(a : Architecture,
     internal_error(__FILE__, __LINE__, "Unsupported xlen" ^ dec_str(sizeof(xlen)))
 }
 
+type asidbits = bits(16)
+
 // ----------------
 // Fields of SATP
 
@@ -280,171 +282,18 @@ union TR_Result('paddr : Type, 'failure : Type) = {
   TR_Failure : ('failure, ext_ptw)
 }
 
-// This function can be ignored on first reading since TLBs are not
-// part of RISC-V architecture spec (see TLB_NOTE above).
-// PRIVATE: translate on TLB hit, and maintenance of PTE in TLB
-function translate_TLB_hit(sv_params : SV_Params,
-                           asid      : asidbits,
-                           ptb       : bits(64),
-                           vAddr     : bits(64),
-                           ac        : AccessType(ext_access_type),
-                           priv      : Privilege,
-                           mxr       : bool,
-                           do_sum    : bool,
-                           ext_ptw   : ext_ptw,
-                           tlb_index : tlb_index_range,
-                           ent       : TLB_Entry)
-                          -> TR_Result(bits(64), PTW_Error) = {
-  let pte       = ent.pte;
-  let ext_pte   = msbs_of_PTE(sv_params, pte);
-  let pte_flags = Mk_PTE_Flags(pte[7 .. 0]);
-  let pte_check = check_PTE_permission(ac, priv, mxr, do_sum, pte_flags,
-                                       ext_pte,
-                                       ext_ptw);
-  match pte_check {
-    PTE_Check_Failure(ext_ptw, ext_ptw_fail) =>
-      TR_Failure(ext_get_ptw_error(ext_ptw_fail), ext_ptw),
-    PTE_Check_Success(ext_ptw) =>
-      match update_PTE_Bits(sv_params, pte, ac) {
-        None()     => TR_Address(ent.pAddr | (vAddr & ent.vAddrMask), ext_ptw),
-        Some(pte') =>
-          // See riscv_platform.sail
-          if not(plat_enable_dirty_update()) then
-            // pte needs dirty/accessed update but that is not enabled
-            TR_Failure(PTW_PTE_Update(), ext_ptw)
-          else {
-            // Writeback the PTE (which has new A/D bits)
-            let n_ent = {ent with pte=pte'};
-            write_TLB(tlb_index, n_ent);
-            let pte_phys_addr = ent.pteAddr[(sizeof(xlen) - 1) .. 0];
-
-            match write_pte(pte_phys_addr, 2 ^ sv_params.log_pte_size_bytes, pte') {
-              MemValue(_)     => (),
-              MemException(e) => internal_error(__FILE__, __LINE__,
-                                                "invalid physical address in TLB")
-            };
-            TR_Address(ent.pAddr | (vAddr & ent.vAddrMask), ext_ptw)
-          }
-      }
-  }
-}
-
-// PRIVATE: translate on TLB miss (do a page-table walk)
-function translate_TLB_miss(sv_params : SV_Params,
-                            asid      : asidbits,
-                            ptb       : bits(64),
-                            vAddr     : bits(64),
-                            ac        : AccessType(ext_access_type),
-                            priv      : Privilege,
-                            mxr       : bool,
-                            do_sum    : bool,
-                            ext_ptw   : ext_ptw) -> TR_Result(bits(64), PTW_Error) = {
-  let initial_level = sv_params.levels - 1;
-  let ptw_result    = pt_walk(sv_params, vAddr, ac, priv, mxr, do_sum,
-                              ptb, initial_level, false, ext_ptw);
-  match ptw_result {
-    PTW_Failure(f, ext_ptw) => TR_Failure(f, ext_ptw),
-    PTW_Success(pAddr, pte, pteAddr, level, global, ext_ptw) => {
-      let ext_pte   = msbs_of_PTE(sv_params, pte);
-      // Without TLBs, this 'match' expression can be replaced simply
-      // by: 'TR_Address(pAddr, ext_ptw)'    (see TLB_NOTE above)
-      match update_PTE_Bits(sv_params, pte, ac) {
-        None() => {
-          add_to_TLB(asid, vAddr, pAddr, pte, pteAddr, level, global,
-                     sv_params.vpn_size_bits,
-                     pagesize_bits);
-          TR_Address(pAddr, ext_ptw)
-        },
-        Some(pte') =>
-          // See riscv_platform.sail
-          if not(plat_enable_dirty_update()) then
-            // pte needs dirty/accessed update but that is not enabled
-            TR_Failure(PTW_PTE_Update(), ext_ptw)
-          else {
-            // Writeback the PTE (which has new A/D bits)
-            let pte_phys_addr = pteAddr[(sizeof(xlen) - 1) .. 0];
-
-            match write_pte(pte_phys_addr, 2 ^ sv_params.log_pte_size_bytes, pte') {
-              MemValue(_) => {
-                add_to_TLB(asid, vAddr, pAddr, pte', pteAddr, level, global,
-                           sv_params.vpn_size_bits,
-                           pagesize_bits);
-                TR_Address(pAddr, ext_ptw)
-              },
-              MemException(e) =>
-                TR_Failure(PTW_Access(), ext_ptw)
-            }
-          }
-        }
-      }
-    }
-}
-
-// PRIVATE
-function translate(sv_params : SV_Params,
-                   asid      : asidbits,
-                   ptb       : bits(64),
-                   vAddr     : bits(64),
-                   ac        : AccessType(ext_access_type),
-                   priv      : Privilege,
-                   mxr       : bool,
-                   do_sum    : bool,
-                   ext_ptw   : ext_ptw)
-                  -> TR_Result(bits(64), PTW_Error) = {
-  // On first reading, assume lookup_TLB returns None(), since TLBs
-  // are not part of RISC-V archticture spec (see TLB_NOTE above)
-  match lookup_TLB(asid, vAddr) {
-    Some(index, ent) => translate_TLB_hit(sv_params, asid, ptb, vAddr, ac, priv,
-                                          mxr, do_sum, ext_ptw, index, ent),
-    None()           => translate_TLB_miss(sv_params, asid, ptb, vAddr, ac, priv,
-                                           mxr, do_sum, ext_ptw)
-  }
-}
-
 // Top-level addr-translation function
 // PUBLIC: invoked from instr-fetch and load/store/amo
 function translateAddr(vAddr   : xlenbits,
                        ac      : AccessType(ext_access_type))
                       -> TR_Result(xlenbits, ExceptionType) = {
-  // Internally the vmem code works with 64-bit values, whether xlen==32 or xlen==64
-  // This 'extend' is a no-op when xlen==64 and extends when xlen==32
-  let vAddr_64b : bits(64) = zero_extend(vAddr);
-  // Effective privilege takes into account mstatus.PRV, mstatus.MPP
-  // See riscv_sys_regs.sail for effectivePrivilege() and cur_privilege
-  let effPriv   : Privilege = effectivePrivilege(ac, mstatus, cur_privilege);
-  let mode      : SATPMode  = translationMode(effPriv);
-  let (valid_va, sv_params) : (bool, SV_Params) = match mode {
-    Sbare => return TR_Address(vAddr, init_ext_ptw),
-    Sv32  => (true,                                 sv32_params),
-    Sv39  => (is_valid_vAddr(sv39_params, vAddr_64b), sv39_params),
-    Sv48  => (is_valid_vAddr(sv48_params, vAddr_64b), sv48_params),
-    // Sv57 => (is_valid_vAddr(sv57_params, vAddr_64b), sv57_params),    // TODO
-  };
-  if not(valid_va) then
-    TR_Failure(translationException(ac, PTW_Invalid_Addr()), init_ext_ptw)
-  else {
-    let mxr               = mstatus[MXR] == 0b1;
-    let do_sum            = mstatus[SUM] == 0b1;
-    let asid   : asidbits = satp_to_asid(satp);
-    let ptb    : bits(64) = satp_to_PT_base(satp);
-    let tr_result1 = translate(sv_params,
-                               asid,
-                               ptb,
-                               vAddr_64b,
-                               ac, effPriv, mxr, do_sum,
-                               init_ext_ptw);
-    // Fixup result PA or exception
-    match tr_result1 {
-      TR_Address(pa, ext_ptw) => TR_Address(truncate(pa, sizeof(xlen)), ext_ptw),
-      TR_Failure(f, ext_ptw)  => TR_Failure(translationException(ac, f), ext_ptw)
-    }
-  }
+  return TR_Address(vAddr, init_ext_ptw)
 }
 
 // ****************************************************************
 // Initialize Virtual Memory state
 
 // PUBLIC: invoked from init_model()
-function init_vmem() -> unit = init_TLB()
+function init_vmem() -> unit = ()
 
 // ****************************************************************

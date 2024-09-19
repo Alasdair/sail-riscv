@@ -24,42 +24,42 @@ SAIL_VLEN := riscv_vlen.sail
 # Instruction sources, depending on target
 SAIL_CHECK_SRCS = riscv_addr_checks_common.sail riscv_addr_checks.sail riscv_misa_ext.sail
 SAIL_DEFAULT_INST = riscv_insts_base.sail riscv_insts_aext.sail riscv_insts_cext.sail riscv_insts_mext.sail riscv_insts_zicsr.sail riscv_insts_next.sail riscv_insts_hints.sail
-SAIL_DEFAULT_INST += riscv_insts_fext.sail riscv_insts_cfext.sail
-SAIL_DEFAULT_INST += riscv_insts_dext.sail riscv_insts_cdext.sail
+# SAIL_DEFAULT_INST += riscv_insts_fext.sail riscv_insts_cfext.sail
+# SAIL_DEFAULT_INST += riscv_insts_dext.sail riscv_insts_cdext.sail
 
 SAIL_DEFAULT_INST += riscv_insts_svinval.sail
 
-SAIL_DEFAULT_INST += riscv_insts_zba.sail
-SAIL_DEFAULT_INST += riscv_insts_zbb.sail
-SAIL_DEFAULT_INST += riscv_insts_zbc.sail
-SAIL_DEFAULT_INST += riscv_insts_zbs.sail
+# SAIL_DEFAULT_INST += riscv_insts_zba.sail
+# SAIL_DEFAULT_INST += riscv_insts_zbb.sail
+# SAIL_DEFAULT_INST += riscv_insts_zbc.sail
+# SAIL_DEFAULT_INST += riscv_insts_zbs.sail
 
-SAIL_DEFAULT_INST += riscv_insts_zcb.sail
+# SAIL_DEFAULT_INST += riscv_insts_zcb.sail
 
-SAIL_DEFAULT_INST += riscv_insts_zfh.sail
+# SAIL_DEFAULT_INST += riscv_insts_zfh.sail
 # Zfa needs to be added after fext, dext and Zfh (as it needs
 # definitions from those)
-SAIL_DEFAULT_INST += riscv_insts_zfa.sail
+# SAIL_DEFAULT_INST += riscv_insts_zfa.sail
 
-SAIL_DEFAULT_INST += riscv_insts_zkn.sail
-SAIL_DEFAULT_INST += riscv_insts_zks.sail
+# SAIL_DEFAULT_INST += riscv_insts_zkn.sail
+# SAIL_DEFAULT_INST += riscv_insts_zks.sail
 
-SAIL_DEFAULT_INST += riscv_insts_zbkb.sail
-SAIL_DEFAULT_INST += riscv_insts_zbkx.sail
+# SAIL_DEFAULT_INST += riscv_insts_zbkb.sail
+# SAIL_DEFAULT_INST += riscv_insts_zbkx.sail
 
 SAIL_DEFAULT_INST += riscv_insts_zicond.sail
 
-SAIL_DEFAULT_INST += riscv_insts_vext_utils.sail
-SAIL_DEFAULT_INST += riscv_insts_vext_fp_utils.sail
-SAIL_DEFAULT_INST += riscv_insts_vext_vset.sail
-SAIL_DEFAULT_INST += riscv_insts_vext_arith.sail
-SAIL_DEFAULT_INST += riscv_insts_vext_fp.sail
-SAIL_DEFAULT_INST += riscv_insts_vext_mem.sail
-SAIL_DEFAULT_INST += riscv_insts_vext_mask.sail
-SAIL_DEFAULT_INST += riscv_insts_vext_vm.sail
-SAIL_DEFAULT_INST += riscv_insts_vext_fp_vm.sail
-SAIL_DEFAULT_INST += riscv_insts_vext_red.sail
-SAIL_DEFAULT_INST += riscv_insts_vext_fp_red.sail
+# SAIL_DEFAULT_INST += riscv_insts_vext_utils.sail
+# SAIL_DEFAULT_INST += riscv_insts_vext_fp_utils.sail
+# SAIL_DEFAULT_INST += riscv_insts_vext_vset.sail
+# SAIL_DEFAULT_INST += riscv_insts_vext_arith.sail
+# SAIL_DEFAULT_INST += riscv_insts_vext_fp.sail
+# SAIL_DEFAULT_INST += riscv_insts_vext_mem.sail
+# SAIL_DEFAULT_INST += riscv_insts_vext_mask.sail
+# SAIL_DEFAULT_INST += riscv_insts_vext_vm.sail
+# SAIL_DEFAULT_INST += riscv_insts_vext_fp_vm.sail
+# SAIL_DEFAULT_INST += riscv_insts_vext_red.sail
+# SAIL_DEFAULT_INST += riscv_insts_vext_fp_red.sail
 
 SAIL_SEQ_INST  = $(SAIL_DEFAULT_INST) riscv_jalr_seq.sail
 SAIL_RMEM_INST = $(SAIL_DEFAULT_INST) riscv_jalr_rmem.sail riscv_insts_rmem.sail
@@ -69,12 +69,12 @@ SAIL_RMEM_INST_SRCS = riscv_insts_begin.sail $(SAIL_RMEM_INST) riscv_insts_end.s
 
 # System and platform sources
 SAIL_SYS_SRCS =  riscv_csr_map.sail
-SAIL_SYS_SRCS += riscv_vext_control.sail    # helpers for the 'V' extension
+# SAIL_SYS_SRCS += riscv_vext_control.sail    # helpers for the 'V' extension
 SAIL_SYS_SRCS += riscv_next_regs.sail
 SAIL_SYS_SRCS += riscv_sys_exceptions.sail  # default basic helpers for exception handling
 SAIL_SYS_SRCS += riscv_sync_exception.sail  # define the exception structure used in the model
 SAIL_SYS_SRCS += riscv_next_control.sail    # helpers for the 'N' extension
-SAIL_SYS_SRCS += riscv_softfloat_interface.sail riscv_fdext_regs.sail riscv_fdext_control.sail
+# SAIL_SYS_SRCS += riscv_softfloat_interface.sail riscv_fdext_regs.sail riscv_fdext_control.sail
 SAIL_SYS_SRCS += riscv_csr_ext.sail         # access to CSR extensions
 SAIL_SYS_SRCS += riscv_sys_control.sail     # general exception handling
 
@@ -91,16 +91,16 @@ SAIL_SYS_SRCS += riscv_sys_control.sail     # general exception handling
 SAIL_VM_SRCS += riscv_vmem_common.sail
 SAIL_VM_SRCS += riscv_vmem_pte.sail
 SAIL_VM_SRCS += riscv_vmem_ptw.sail
-SAIL_VM_SRCS += riscv_vmem_tlb.sail
+# SAIL_VM_SRCS += riscv_vmem_tlb.sail
 SAIL_VM_SRCS += riscv_vmem.sail
 
 # Non-instruction sources
 PRELUDE = prelude.sail $(SAIL_XLEN) $(SAIL_FLEN) $(SAIL_VLEN) prelude_mem_metadata.sail prelude_mem.sail
 
 SAIL_REGS_SRCS = riscv_reg_type.sail riscv_freg_type.sail riscv_regs.sail riscv_pc_access.sail riscv_sys_regs.sail
-SAIL_REGS_SRCS += riscv_pmp_regs.sail riscv_pmp_control.sail
+# SAIL_REGS_SRCS += riscv_pmp_regs.sail riscv_pmp_control.sail
 SAIL_REGS_SRCS += riscv_ext_regs.sail $(SAIL_CHECK_SRCS)
-SAIL_REGS_SRCS += riscv_vreg_type.sail riscv_vext_regs.sail
+# SAIL_REGS_SRCS += riscv_vreg_type.sail riscv_vext_regs.sail
 
 SAIL_ARCH_SRCS = $(PRELUDE)
 SAIL_ARCH_SRCS += riscv_types_common.sail riscv_types_ext.sail riscv_types.sail
@@ -272,6 +272,20 @@ generated_definitions/c/riscv_model_$(ARCH).c: $(SAIL_SRCS) model/main.sail Make
 generated_definitions/c2/riscv_model_$(ARCH).c: $(SAIL_SRCS) model/main.sail Makefile
 	mkdir -p generated_definitions/c2
 	$(SAIL) $(SAIL_FLAGS) -no_warn -memo_z3 -config c_emulator/config.json -c2 $(SAIL_SRCS) -o $(basename $@)
+
+generated_definitions/systemverilog/riscv_model_$(ARCH).sv: $(SAIL_SRCS) model/main.sail
+	mkdir -p generated_definitions/systemverilog
+	$(SAIL) $(SAIL_FLAGS) -O --Oconstant-fold --sv --sv-toplevel step --sv-no-assertions --sv-dpi memory --dprofile $(SAIL_SRCS) -o $(basename $@)
+
+generated_definitions/systemverilog/sim.cpp: sv_emulator/sim.cpp
+	cp $< $@
+
+generated_definitions/systemverilog/verilated_stamp_$(ARCH): generated_definitions/systemverilog/riscv_model_$(ARCH).sv generated_definitions/systemverilog/sim.cpp
+	verilator --cc --exe --build -j 0 --top-module sail_toplevel -Isv_emulator -I$(SAIL_LIB_DIR)/sv -Mdir generated_definitions/systemverilog/$(ARCH) $< sim.cpp sv_emulator/riscv_platform.sv $(SAIL_LIB_DIR)/*.c -CFLAGS "-xc++ -I$(SAIL_LIB_DIR) $(GMP_FLAGS) $(ZLIB_FLAGS)" -LDFLAGS "$(GMP_LIBS) $(ZLIB_LIBS)"
+	touch $@
+
+sv_emulator/riscv_sim_$(ARCH): generated_definitions/systemverilog/verilated_stamp_$(ARCH)
+	cp generated_definitions/systemverilog/$(ARCH)/Vsail_toplevel $@
 
 $(SOFTFLOAT_LIBS):
 	$(MAKE) SPECIALIZE_TYPE=$(SOFTFLOAT_SPECIALIZE_TYPE) -C $(SOFTFLOAT_LIBDIR)

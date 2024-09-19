@@ -49,12 +49,12 @@ function readCSR csr : csreg -> xlenbits = {
     (0x344,  _) => mip.bits,
 
     // pmpcfgN
-    (0x3A @ idx : bits(4),  _) if idx[0] == bitzero | sizeof(xlen) == 32 => pmpReadCfgReg(unsigned(idx)),
+    /* (0x3A @ idx : bits(4),  _) if idx[0] == bitzero | sizeof(xlen) == 32 => pmpReadCfgReg(unsigned(idx)), */
     // pmpaddrN. Unfortunately the PMP index does not nicely align with the CSR index bits.
-    (0x3B @ idx : bits(4),  _) => pmpReadAddrReg(unsigned(0b00 @ idx)),
-    (0x3C @ idx : bits(4),  _) => pmpReadAddrReg(unsigned(0b01 @ idx)),
-    (0x3D @ idx : bits(4),  _) => pmpReadAddrReg(unsigned(0b10 @ idx)),
-    (0x3E @ idx : bits(4),  _) => pmpReadAddrReg(unsigned(0b11 @ idx)),
+    /* (0x3B @ idx : bits(4),  _) => pmpReadAddrReg(unsigned(0b00 @ idx)), */
+    /* (0x3C @ idx : bits(4),  _) => pmpReadAddrReg(unsigned(0b01 @ idx)), */
+    /* (0x3D @ idx : bits(4),  _) => pmpReadAddrReg(unsigned(0b10 @ idx)), */
+    /* (0x3E @ idx : bits(4),  _) => pmpReadAddrReg(unsigned(0b11 @ idx)), */
 
     /* machine mode counters */
     (0xB00,  _) => mcycle[(sizeof(xlen) - 1) .. 0],
@@ -63,13 +63,13 @@ function readCSR csr : csreg -> xlenbits = {
     (0xB82, 32) => minstret[63 .. 32],
 
     /* vector */
-    (0x008, _) => zero_extend(vstart),
-    (0x009, _) => zero_extend(vxsat),
-    (0x00A, _) => zero_extend(vxrm),
-    (0x00F, _) => zero_extend(vcsr.bits),
-    (0xC20, _) => vl,
-    (0xC21, _) => vtype.bits,
-    (0xC22, _) => vlenb,
+    /* (0x008, _) => zero_extend(vstart), */
+    /* (0x009, _) => zero_extend(vxsat), */
+    /* (0x00A, _) => zero_extend(vxrm), */
+    /* (0x00F, _) => zero_extend(vcsr.bits), */
+    /* (0xC20, _) => vl, */
+    /* (0xC21, _) => vtype.bits, */
+    /* (0xC22, _) => vlenb, */
 
     /* trigger/debug */
     (0x7a0,  _) => ~(tselect),  /* this indicates we don't have any trigger support */
@@ -135,16 +135,16 @@ function writeCSR (csr : csreg, value : xlenbits) -> unit = {
     (0x344,  _) => { mip = legalize_mip(mip, value); Some(mip.bits) },
 
     // pmpcfgN
-    (0x3A @ idx : bits(4),  _) if idx[0] == bitzero | sizeof(xlen) == 32 => {
-      let idx = unsigned(idx);
-      pmpWriteCfgReg(idx, value); Some(pmpReadCfgReg(idx))
-    },
+    /* (0x3A @ idx : bits(4),  _) if idx[0] == bitzero | sizeof(xlen) == 32 => { */
+    /*   let idx = unsigned(idx); */
+    /*   pmpWriteCfgReg(idx, value); Some(pmpReadCfgReg(idx)) */
+    /* }, */
 
     // pmpaddrN. Unfortunately the PMP index does not nicely align with the CSR index bits.
-    (0x3B @ idx : bits(4),  _) => { let idx = unsigned(0b00 @ idx); pmpWriteAddrReg(idx, value); Some(pmpReadAddrReg(idx)) },
-    (0x3C @ idx : bits(4),  _) => { let idx = unsigned(0b01 @ idx); pmpWriteAddrReg(idx, value); Some(pmpReadAddrReg(idx)) },
-    (0x3D @ idx : bits(4),  _) => { let idx = unsigned(0b10 @ idx); pmpWriteAddrReg(idx, value); Some(pmpReadAddrReg(idx)) },
-    (0x3E @ idx : bits(4),  _) => { let idx = unsigned(0b11 @ idx); pmpWriteAddrReg(idx, value); Some(pmpReadAddrReg(idx)) },
+    /* (0x3B @ idx : bits(4),  _) => { let idx = unsigned(0b00 @ idx); pmpWriteAddrReg(idx, value); Some(pmpReadAddrReg(idx)) }, */
+    /* (0x3C @ idx : bits(4),  _) => { let idx = unsigned(0b01 @ idx); pmpWriteAddrReg(idx, value); Some(pmpReadAddrReg(idx)) }, */
+    /* (0x3D @ idx : bits(4),  _) => { let idx = unsigned(0b10 @ idx); pmpWriteAddrReg(idx, value); Some(pmpReadAddrReg(idx)) }, */
+    /* (0x3E @ idx : bits(4),  _) => { let idx = unsigned(0b11 @ idx); pmpWriteAddrReg(idx, value); Some(pmpReadAddrReg(idx)) }, */
 
     /* machine mode counters */
     (0xB00,  _) => { mcycle[(sizeof(xlen) - 1) .. 0] = value; Some(value) },
@@ -174,13 +174,13 @@ function writeCSR (csr : csreg, value : xlenbits) -> unit = {
     (0x015,  _) => write_seed_csr(),
 
     /* vector */
-    (0x008, _) => { let vstart_length = get_vlen_pow(); vstart = zero_extend(16, value[(vstart_length - 1) .. 0]); Some(zero_extend(vstart)) },
-    (0x009, _) => { vxsat = value[0 .. 0]; Some(zero_extend(vxsat)) },
-    (0x00A, _) => { vxrm = value[1 .. 0]; Some(zero_extend(vxrm)) },
-    (0x00F, _) => { vcsr.bits = value[2 ..0]; Some(zero_extend(vcsr.bits)) },
-    (0xC20, _) => { vl = value; Some(vl) },
-    (0xC21, _) => { vtype.bits = value; Some(vtype.bits) },
-    (0xC22, _) => { vlenb = value; Some(vlenb) },
+    /* (0x008, _) => { let vstart_length = get_vlen_pow(); vstart = zero_extend(16, value[(vstart_length - 1) .. 0]); Some(zero_extend(vstart)) }, */
+    /* (0x009, _) => { vxsat = value[0 .. 0]; Some(zero_extend(vxsat)) }, */
+    /* (0x00A, _) => { vxrm = value[1 .. 0]; Some(zero_extend(vxrm)) }, */
+    /* (0x00F, _) => { vcsr.bits = value[2 ..0]; Some(zero_extend(vcsr.bits)) }, */
+    /* (0xC20, _) => { vl = value; Some(vl) }, */
+    /* (0xC21, _) => { vtype.bits = value; Some(vtype.bits) }, */
+    /* (0xC22, _) => { vlenb = value; Some(vlenb) }, */
 
     _           => ext_write_CSR(csr, value)
   };

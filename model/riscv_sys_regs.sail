@@ -731,8 +731,7 @@ mapping opst_code : seed_opst <-> bits(2) = {
 val get_16_random_bits = {
     ocaml: "Platform.get_16_random_bits",
     interpreter: "Platform.get_16_random_bits",
-    c: "plat_get_16_random_bits",
-    lem: "plat_get_16_random_bits"
+    _: "plat_get_16_random_bits"
 } : unit -> bits(16)
 
 /* Entropy source spec requires an Illegal opcode exception be raised if the

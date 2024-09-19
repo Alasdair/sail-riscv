@@ -722,10 +722,10 @@ function clause execute SFENCE_VMA(rs1, rs2) = {
     User       => { handle_illegal(); RETIRE_FAIL },
     Supervisor => match (architecture(get_mstatus_SXL(mstatus)), mstatus[TVM]) {
                     (Some(_), 0b1)  => { handle_illegal(); RETIRE_FAIL },
-                    (Some(_), 0b0) => { flush_TLB(asid, addr); RETIRE_SUCCESS },
+                    (Some(_), 0b0) => { /*flush_TLB(asid, addr); */ RETIRE_SUCCESS },
                     (_, _)           => internal_error(__FILE__, __LINE__, "unimplemented sfence architecture")
                   },
-    Machine    => { flush_TLB(asid, addr); RETIRE_SUCCESS }
+    Machine    => { /* flush_TLB(asid, addr); */ RETIRE_SUCCESS }
   }
 }
 

@@ -157,11 +157,11 @@ function check_CSR(csr : csreg, p : Privilege, isWrite : bool) -> bool =
  * where cancellation can be performed.
  */
 
-val speculate_conditional = monadic {ocaml: "Platform.speculate_conditional", interpreter: "excl_res", c: "speculate_conditional", lem: "speculate_conditional_success"} : unit -> bool
+val speculate_conditional = monadic {ocaml: "Platform.speculate_conditional", interpreter: "excl_res", lem: "speculate_conditional_success", _: "speculate_conditional"} : unit -> bool
 
-val load_reservation = {ocaml: "Platform.load_reservation", interpreter: "Platform.load_reservation", c: "load_reservation", lem: "load_reservation"} : xlenbits -> unit
-val match_reservation = {ocaml: "Platform.match_reservation", interpreter: "Platform.match_reservation", lem: "match_reservation", c: "match_reservation"} : xlenbits -> bool
-val cancel_reservation = {ocaml: "Platform.cancel_reservation", interpreter: "Platform.cancel_reservation", c: "cancel_reservation", lem: "cancel_reservation"} : unit -> unit
+val load_reservation = {ocaml: "Platform.load_reservation", interpreter: "Platform.load_reservation", _: "load_reservation"} : xlenbits -> unit
+val match_reservation = {ocaml: "Platform.match_reservation", interpreter: "Platform.match_reservation", _: "match_reservation"} : xlenbits -> bool
+val cancel_reservation = {ocaml: "Platform.cancel_reservation", interpreter: "Platform.cancel_reservation", _: "cancel_reservation"} : unit -> unit
 
 /* Exception delegation: given an exception and the privilege at which
  * it occured, returns the privilege at which it should be handled.
@@ -528,27 +528,27 @@ function init_sys() -> unit = {
   menvcfg.bits = zero_extend(0b0);
   senvcfg.bits = zero_extend(0b0);
   /* initialize vector csrs */
-  elen               = 0b1; /* ELEN=64 as the common case */
-  vlen               = 0b0100; /* VLEN=512 as a default value */
-  vlenb              = to_bits(sizeof(xlen), 2 ^ (get_vlen_pow() - 3)); /* vlenb holds the constant value VLEN/8 */
-  /* VLEN value needs to be manually changed currently.
-   * See riscv_vlen.sail for details.
-   */
-  vstart             = zero_extend(0b0);
-  vxsat              = 0b0;
-  vxrm               = 0b00;
-  vcsr[vxrm]       = vxrm;
-  vcsr[vxsat]      = vxsat;
-  vl                 = zero_extend(0b0);
-  vtype[vill]      = 0b1;
-  vtype[reserved]  = zero_extend(0b0);
-  vtype[vma]       = 0b0;
-  vtype[vta]       = 0b0;
-  vtype[vsew]      = 0b000;
-  vtype[vlmul]     = 0b000;
+  /* elen               = 0b1; /\* ELEN=64 as the common case *\/ */
+  /* vlen               = 0b0100; /\* VLEN=512 as a default value *\/ */
+  /* vlenb              = to_bits(sizeof(xlen), 2 ^ (get_vlen_pow() - 3)); /\* vlenb holds the constant value VLEN/8 *\/ */
+  /* /\* VLEN value needs to be manually changed currently. */
+  /*  * See riscv_vlen.sail for details. */
+  /*  *\/ */
+  /* vstart             = zero_extend(0b0); */
+  /* vxsat              = 0b0; */
+  /* vxrm               = 0b00; */
+  /* vcsr[vxrm]       = vxrm; */
+  /* vcsr[vxsat]      = vxsat; */
+  /* vl                 = zero_extend(0b0); */
+  /* vtype[vill]      = 0b1; */
+  /* vtype[reserved]  = zero_extend(0b0); */
+  /* vtype[vma]       = 0b0; */
+  /* vtype[vta]       = 0b0; */
+  /* vtype[vsew]      = 0b000; */
+  /* vtype[vlmul]     = 0b000; */
 
   // PMP's L and A fields are set to 0 on reset.
-  init_pmp();
+  /* init_pmp(); */
 
   // log compatibility with spike
   if   get_config_print_reg()

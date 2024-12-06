@@ -15,6 +15,14 @@ function automatic bit sys_enable_rvc(sail_unit u);
    return 1'h0;
 endfunction
 
+function automatic bit sys_enable_bext(sail_unit u);
+   return 1'h0;
+endfunction
+
+function automatic bit sys_enable_vext(sail_unit u);
+   return 1'h0;
+endfunction
+
 function automatic bit sys_enable_zfinx(sail_unit u);
    return 1'h0;
 endfunction
@@ -68,7 +76,7 @@ function automatic bit plat_mtval_has_illegal_inst_bits(sail_unit u);
 endfunction
 
 function automatic logic [31:0] plat_htif_tohost(sail_unit u);
-   return 32'h0;
+   return 32'h80001000;
 endfunction
 
 function automatic bit speculate_conditional(sail_unit u);

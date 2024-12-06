@@ -275,17 +275,16 @@ generated_definitions/c2/riscv_model_$(ARCH).c: $(SAIL_SRCS) model/main.sail Mak
 
 generated_definitions/systemverilog/riscv_model_$(ARCH).sv: $(SAIL_SRCS) model/main.sail
 	mkdir -p generated_definitions/systemverilog
-	$(SAIL) $(SAIL_FLAGS) -O --Oconstant-fold --sv --sv-toplevel step --sv-no-assertions --sv-dpi memory --dprofile $(SAIL_SRCS) -o $(basename $@)
+	$(SAIL) $(SAIL_FLAGS) -O --Oconstant-fold --sv --sv-toplevel sv_step --sv-no-assertions --sv-dpi memory --dprofile $(SAIL_SRCS) -o $(basename $@)
 
 generated_definitions/systemverilog/sim.cpp: sv_emulator/sim.cpp
 	cp $< $@
 
-generated_definitions/systemverilog/verilated_stamp_$(ARCH): generated_definitions/systemverilog/riscv_model_$(ARCH).sv generated_definitions/systemverilog/sim.cpp
+generated_definitions/systemverilog/$(ARCH)/Vsail_toplevel: generated_definitions/systemverilog/riscv_model_$(ARCH).sv generated_definitions/systemverilog/sim.cpp
 	verilator --cc --exe --build -j 0 --top-module sail_toplevel -Isv_emulator -I$(SAIL_LIB_DIR)/sv -Mdir generated_definitions/systemverilog/$(ARCH) $< sim.cpp sv_emulator/riscv_platform.sv $(SAIL_LIB_DIR)/*.c -CFLAGS "-xc++ -I$(SAIL_LIB_DIR) $(GMP_FLAGS) $(ZLIB_FLAGS)" -LDFLAGS "$(GMP_LIBS) $(ZLIB_LIBS)"
-	touch $@
 
-sv_emulator/riscv_sim_$(ARCH): generated_definitions/systemverilog/verilated_stamp_$(ARCH)
-	cp generated_definitions/systemverilog/$(ARCH)/Vsail_toplevel $@
+sv_emulator/riscv_sim_$(ARCH): generated_definitions/systemverilog/$(ARCH)/Vsail_toplevel
+	cp $< $@
 
 $(SOFTFLOAT_LIBS):
 	$(MAKE) SPECIALIZE_TYPE=$(SOFTFLOAT_SPECIALIZE_TYPE) -C $(SOFTFLOAT_LIBDIR)

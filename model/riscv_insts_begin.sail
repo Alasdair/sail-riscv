@@ -18,6 +18,8 @@ val execute : ast -> Retired
 scattered function execute
 
 val assembly : ast <-> string
+
+$[optimize_control_flow_order]
 scattered mapping assembly
 
 val encdec : ast <-> bits(32)

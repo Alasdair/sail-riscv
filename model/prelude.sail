@@ -92,10 +92,10 @@ val get_config_print_mem = {ocaml: "Platform.get_config_print_mem", c:"get_confi
 val get_config_print_platform = {ocaml: "Platform.get_config_print_platform", c:"get_config_print_platform"} : unit -> bool
 
 // defaults for other backends
-function get_config_print_instr () = false
-function get_config_print_reg () = false
-function get_config_print_mem () = false
-function get_config_print_platform () = false
+function get_config_print_instr () = true
+function get_config_print_reg () = true
+function get_config_print_mem () = true
+function get_config_print_platform () = true
 
 val sign_extend : forall 'n 'm, 'm >= 'n. (implicit('m), bits('n)) -> bits('m)
 val zero_extend : forall 'n 'm, 'm >= 'n. (implicit('m), bits('n)) -> bits('m)

@@ -77,7 +77,7 @@ $include <option.sail>
 val string_take = pure "string_take" : (string, nat) -> string
 val string_drop = pure "string_drop" : (string, nat) -> string
 val string_length = pure "string_length" : string -> nat
-val string_append = pure {coq: "String.append", c: "concat_str", _: "string_append"} : (string, string) -> string
+val string_append = pure {coq: "String.append", systemverilog: "concat_str", c: "concat_str", _: "string_append"} : (string, string) -> string
 val string_startswith = pure "string_startswith" : (string, string) -> bool
 
 val n_leading_spaces = pure { coq: "n_leading_spaces_Z" } : string -> nat

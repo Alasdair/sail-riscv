@@ -33,6 +33,21 @@ svBit sail_read_tag(const svLogicVecVal* sv_addr)
   return 0;
 }
 
+void sail_write_byte(const svLogicVecVal* sv_addr, const svLogicVecVal* sv_byte)
+{
+  uint64_t addr = UINT64_C(0);
+  addr |= sv_addr[1].aval;
+  addr <<= 32;
+  addr |= sv_addr[0].aval;
+
+  uint64_t byte = UINT8_C(0);
+  byte |= sv_byte[0].aval;
+
+  std::cout << "WRITE " << addr << ", " << byte << std::endl;
+
+  return;
+}
+
 #define DEFAULT_RSTVEC 0x00001000
 
 bool is_32bit_model(void) {
@@ -104,10 +119,19 @@ int main(int argc, char** argv) {
     top->reset = 0;
 
     while (!contextp->gotFinish()) {
-        std::cout << "Step" << std::endl;
         top->clk = !top->clk;
         top->eval();
-        if (top->clk) top->arg0++;
+        if (top->clk) {
+          if (top->htif_done) {
+            if (top->htif_exit_code == 0) {
+              std::cout << "SUCCESS" << std::endl;
+            } else {
+              std::cout << "FAILURE" << std::endl;
+            }
+            break;
+          }
+          top->arg0++;
+        }
     }
 
     return 0;

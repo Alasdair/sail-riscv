@@ -24,6 +24,7 @@ mapping clause encdec = UTYPE(imm, rd, op)
   <-> imm @ encdec_reg(rd) @ encdec_uop(op)
 
 function clause execute (UTYPE(imm, rd, op)) = {
+  early_tick_pc();
   let off : xlenbits = sign_extend(imm @ 0x000);
   X(rd) = match op {
     LUI   => off,
@@ -163,6 +164,7 @@ mapping clause encdec = ITYPE(imm, rs1, rd, op)
   <-> imm @ encdec_reg(rs1) @ encdec_iop(op) @ encdec_reg(rd) @ 0b0010011
 
 function clause execute (ITYPE (imm, rs1, rd, op)) = {
+  early_tick_pc();
   let immext : xlenbits = sign_extend(imm);
   X(rd) = match op {
     ADDI  => X(rs1) + immext,
@@ -207,6 +209,7 @@ mapping clause encdec = SHIFTIOP(shamt, rs1, rd, SRAI)
   when xlen == 64 | shamt[5] == bitzero
 
 function clause execute (SHIFTIOP(shamt, rs1, rd, op)) = {
+  early_tick_pc();
   let shamt = shamt[log2_xlen - 1 .. 0];
   X(rd) = match op {
     SLLI => X(rs1) << shamt,
@@ -240,6 +243,7 @@ mapping clause encdec = RTYPE(rs2, rs1, rd, SUB)  <-> 0b0100000 @ encdec_reg(rs2
 mapping clause encdec = RTYPE(rs2, rs1, rd, SRA)  <-> 0b0100000 @ encdec_reg(rs2) @ encdec_reg(rs1) @ 0b101 @ encdec_reg(rd) @ 0b0110011
 
 function clause execute (RTYPE(rs2, rs1, rd, op)) = {
+  early_tick_pc();
   X(rd) = match op {
     ADD  => X(rs1) + X(rs2),
     SLT  => zero_extend(bool_to_bits(X(rs1) <_s X(rs2))),
@@ -294,6 +298,7 @@ function clause execute (LOAD(imm, rs1, rd, is_unsigned, width)) = {
 
   match vmem_read(rs1, offset, width, Read(Data), false, false, false) {
     Ok(data) => {
+      early_tick_pc();
       X(rd) = extend_value(is_unsigned, data);
       RETIRE_SUCCESS
     },
@@ -340,6 +345,7 @@ mapping clause encdec = ADDIW(imm, rs1, rd)
   when xlen == 64
 
 function clause execute (ADDIW(imm, rs1, rd)) = {
+  early_tick_pc();
   let result = X(rs1) + sign_extend(imm);
   X(rd) = sign_extend(result[31..0]);
   RETIRE_SUCCESS
@@ -369,6 +375,7 @@ mapping clause encdec = RTYPEW(rs2, rs1, rd, SRAW)
   when xlen == 64
 
 function clause execute (RTYPEW(rs2, rs1, rd, op)) = {
+  early_tick_pc();
   let rs1_val = X(rs1)[31..0];
   let rs2_val = X(rs2)[31..0];
   let result : bits(32) = match op {
@@ -408,6 +415,7 @@ mapping clause encdec = SHIFTIWOP(shamt, rs1, rd, SRAIW)
   when xlen == 64
 
 function clause execute (SHIFTIWOP(shamt, rs1, rd, op)) = {
+  early_tick_pc();
   let rs1_val = X(rs1)[31..0];
   let result : bits(32) = match op {
     SLLIW => rs1_val << shamt,
@@ -442,6 +450,7 @@ function effective_fence_set(set : bits(4), fiom : bool) -> bits(4) = {
 }
 
 function clause execute (FENCE(pred, succ)) = {
+  early_tick_pc();
   // If the FIOM bit in menvcfg/senvcfg is set then the I/O bits can imply R/W.
   let fiom = is_fiom_active();
   let pred = effective_fence_set(pred, fiom);

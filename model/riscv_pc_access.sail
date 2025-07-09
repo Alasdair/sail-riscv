@@ -26,10 +26,22 @@ function set_next_pc(pc) = {
   nextPC = pc
 }
 
-val tick_pc : unit -> unit
-function tick_pc() = {
-  PC = nextPC;
-  pc_write_callback(PC);
+register have_ticked_pc : bool = false
+
+function early_tick_pc() -> unit = {
+  if not(have_ticked_pc) then {
+    have_ticked_pc = true;
+    PC = nextPC;
+    pc_write_callback(PC);
+  }
+}
+
+function tick_pc() -> unit = {
+  if not(have_ticked_pc) then {
+    PC = nextPC;
+    pc_write_callback(PC);
+  };
+  have_ticked_pc = false;
 }
 
 // For forcing PC from C. This is ugly.

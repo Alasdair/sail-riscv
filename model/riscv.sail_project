@@ -338,7 +338,7 @@ riscv_postlude {
 
 riscv_termination {
   after riscv_postlude
-  requires riscv_core, riscv, extensions
+  requires riscv_core, riscv, Zca, FD
 
   files
     if $TERMINATION_FILE then

@@ -48,6 +48,8 @@ mapping clause assembly = C_ADDI4SPN(rdc, nzimm)
   <-> "c.addi4spn" ^ spc() ^ creg_name(rdc) ^ sep() ^ sp_reg_name() ^ sep() ^ hex_bits_10(nzimm @ 0b00)
       if nzimm != 0b00000000
 
+function clause compressed_measure(C_ADDI4SPN(_, _)) = 1
+
 /* ****************************************************************** */
 union clause instruction = C_LW : (bits(5), cregidx, cregidx)
 
